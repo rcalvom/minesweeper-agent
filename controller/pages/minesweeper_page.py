@@ -54,22 +54,6 @@ class MinesweeperPage(BasePage):
 
     def get_board_state(self) -> BoardState:
         """Return the current Board State"""
-        """web_cells = super().find_elements("//div[contains(@id, 'cell')]")
-        data = {}
-        last_cell = web_cells[-1]
-        x_last = int(last_cell.get_attribute("data-x")) + 1
-        y_last = int(last_cell.get_attribute("data-y")) + 1
-        for i in range(x_last):
-            data[i] = {}
-            for j in range(y_last):
-                data[i][j] = None
-        for index, web_cell in enumerate(web_cells):
-            element_class = web_cell.get_attribute("class")
-            if "hd_opened" in element_class:
-                data[index // x_last][index % y_last] = UncoveredCellState(number=re.match(r".*hd_type(\d+).*", element_class).group(1))
-            elif "hd_closed" in element_class:
-                data[index // x_last][index % y_last] = CoveredCellState(flaged="hd_flag" in element_class)
-        return BoardState(board=data)"""
         cells_html = super().find("//*[@id='A43']").get_attribute("innerHTML")
         cells_regex = re.findall(r"<div (.+?)></div>", cells_html)
         cells = []
