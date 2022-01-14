@@ -2,6 +2,7 @@
 
 
 # Minesweeper Agent
+from time import sleep, time
 from controller.pages.base_page import BasePage
 from models.minesweeper_models import BoardState, CoveredCellState, UncoveredCellState
 
@@ -39,6 +40,7 @@ class MinesweeperPage(BasePage):
     def select_custom_difficulty_level(self, width, height, mines):
         """Select a custom difficulty level"""
         super().click_element("/html/body/div[3]/div[2]/div/div[1]/div[2]/div/div[13]/div/div[1]/a[4]/span")
+        sleep(1)
         super().write("//*[@id='custom_width']", str(width))
         super().write("//*[@id='custom_height']", str(height))
         super().write("//*[@id='custom_mines']", str(mines))
@@ -50,7 +52,28 @@ class MinesweeperPage(BasePage):
 
     def flag_cell(self, x, y):
         """Flag an specific game cell in (x, y) position"""
-        super().right_click_element("//div[@id='cell_{0}_{1}']".format(x, y))    
+        super().right_click_element("//div[@id='cell_{0}_{1}']".format(x, y))
+
+    def get_3BV(self) -> int:
+        """Get 3BV metic of a game"""
+        div_html = super().find("/html/body/div[3]/div[2]/div/div[1]/div[2]/div/div[20]/table/tbody/tr/td[2]/div/div/div/div/div[1]").get_attribute("innerHTML")
+        return int(re.findall(r"(?<=: )(\d+)", div_html))
+
+    def get_clicks(self) -> int:
+        """Get number of clicks performed"""
+        div1_html = super().find("/html/body/div[3]/div[2]/div/div[1]/div[2]/div/div[20]/table/tbody/tr/td[2]/div/div/div/div/div[1]/abbr[3]").get_attribute("innerHTML")
+        div2_html = super().find("/html/body/div[3]/div[2]/div/div[1]/div[2]/div/div[20]/table/tbody/tr/td[2]/div/div/div/div/div[1]/abbr[4]").get_attribute("innerHTML")
+        return int(div1_html) + int(div2_html)
+
+    def is_lost(self) -> bool:
+        """Check if a game is lost"""
+        div_html = super().find("//*[@id='top_area_face']").get_attribute("outerHTML")
+        return "lose" in div_html
+
+    def is_won(self) -> bool:
+        """Check if a game is won"""
+        div_html = super().find("//*[@id='top_area_face']").get_attribute("outerHTML")
+        return "win" in div_html
 
     def get_board_state(self) -> BoardState:
         """Return the current Board State"""
