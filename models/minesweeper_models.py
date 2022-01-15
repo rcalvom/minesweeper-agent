@@ -18,6 +18,7 @@ class BoardState():
                     if self.get_number_of_uncover_neighbours(i, j) == self.board[i][j].number:
                         result.append((i, j))
                 elif isinstance(self.board[i][j], CoveredCellState):
+                    None
         return result
 
     def aget_unflaged_mined_cells(self):
