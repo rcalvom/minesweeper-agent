@@ -14,11 +14,11 @@ import numpy as np
 # Pandas
 import pandas as pd
 
-mines_factor = [0.05, 0.10]
+mines_factor = [0.05, 0.10, 0.15]
 results_wins = []
 results_losses = []
 xlabel_mines_factor = []
-games = 2
+games = 20
 
 for mine_factor in mines_factor:
     games_won = 0

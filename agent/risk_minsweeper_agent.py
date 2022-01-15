@@ -29,8 +29,9 @@ class RiskMinsweeperAgent(Agent):
 
         while not self.page.is_lost() and not self.page.is_won():
             nextMoves = self.calculateRisk(self.x, self.y)
-            nextMove = nextMoves[randint(0, len(nextMoves))]
-            self.page.uncover_cell(nextMove[0], nextMove[1])
+            bla = randint(0, len(nextMoves)-1)
+            nextMove = nextMoves[bla]
+            self.page.uncover_cell(nextMove[1], nextMove[0])
 
         if self.page.is_lost():
             self.is_won = False
@@ -41,7 +42,7 @@ class RiskMinsweeperAgent(Agent):
     def calculateRisk(self, rows, columns) -> list:
         
         boardString = self.page.get_board_state().board
-        riskMap = np.zeros((rows,columns))
+        riskMap = np.full((rows,columns), 100)
         boardWarnings = []
         newCoveredCells = []
 
@@ -49,62 +50,36 @@ class RiskMinsweeperAgent(Agent):
             fixedList = []
             for y in range(columns):
                 if(isinstance(boardString[i][y], type(self.possible))):
-                    fixedList.append(int(boardString[i][y].number))
+                    if((int(boardString[i][y].number) != 0)):
+                        fixedList.append(int(boardString[i][y].number))
+                    else: fixedList.append(int(9))
                 else:
                     fixedList.append(0)
                     newCoveredCells.append((i,y))
 
             boardWarnings.append(fixedList)
 
-        """for indexes in newCoveredCells:
+        for indexes in newCoveredCells:
             v = indexes[0]
-            w = indexes[1]"""
-
-        for v in range(rows):        
-            for w in range(columns):
-                if((v > 0 and w > 0) and (v < (columns - 1) and w < (columns - 1))):
-                    riskMap[v-1][w-1] += boardWarnings[v][w]
-                    riskMap[v-1][w] += boardWarnings[v][w]
-                    riskMap[v-1][w+1] += boardWarnings[v][w]
-                    riskMap[v][w-1] += boardWarnings[v][w]
-                    riskMap[v][w+1] += boardWarnings[v][w]
-                    riskMap[v+1][w-1] += boardWarnings[v][w]
-                    riskMap[v+1][w] += boardWarnings[v][w]
-                    riskMap[v+1][w+1] += boardWarnings[v][w]
-                elif(v == 0 and w == 0):
-                    riskMap[v][w+1] += boardWarnings[v][w]
-                    riskMap[v+1][w] += boardWarnings[v][w]
-                    riskMap[v+1][w+1] += boardWarnings[v][w]
-                elif(v == (rows - 1) and w == (columns - 1)):
-                    riskMap[v-1][w-1] += boardWarnings[v][w]
-                    riskMap[v-1][w] += boardWarnings[v][w]
-                    riskMap[v][w-1] += boardWarnings[v][w]
-                elif(v == 0 and w > 0):
-                    riskMap[v][w-1] += boardWarnings[v][w]
-                    riskMap[v+1][w] += boardWarnings[v][w]
-                    riskMap[v+1][w-1] += boardWarnings[v][w]
-                    if(w != (columns - 1)):
-                        riskMap[v][w+1] += boardWarnings[v][w]
-                        riskMap[v+1][w+1] += boardWarnings[v][w]
-                elif(v == (rows - 1) and w > 0):
-                    riskMap[v-1][w] += boardWarnings[v][w]
-                    riskMap[v-1][w+1] += boardWarnings[v][w]
-                    riskMap[v][w+1] += boardWarnings[v][w]
-                    if(w != 0):
-                        riskMap[v-1][w-1] += boardWarnings[v][w]
-                        riskMap[v][w-1] += boardWarnings[v][w]
-                elif((v > 0 and v < (rows - 1)) and w == 0):
-                    riskMap[v-1][w] += boardWarnings[v][w]
-                    riskMap[v-1][w+1] += boardWarnings[v][w]
-                    riskMap[v][w+1] += boardWarnings[v][w]
-                    riskMap[v+1][w] += boardWarnings[v][w]
-                    riskMap[v+1][w+1] += boardWarnings[v][w]
-                elif((v > 0 and v < (rows - 1)) and w == (columns - 1)):
-                    riskMap[v-1][w-1] += boardWarnings[v][w]
-                    riskMap[v-1][w] += boardWarnings[v][w]
-                    riskMap[v][w-1] += boardWarnings[v][w]
-                    riskMap[v+1][w-1] += boardWarnings[v][w]
-                    riskMap[v+1][w] += boardWarnings[v][w]
+            w = indexes[1]
+            if((v > 0 and w > 0) and (v < (columns - 1) and w < (columns - 1))):
+                riskMap[v][w] = boardWarnings[v-1][w-1]+ boardWarnings[v-1][w] + boardWarnings[v-1][w+1] + boardWarnings[v][w-1] + boardWarnings[v][w+1] + boardWarnings[v+1][w-1] + boardWarnings[v+1][w] + boardWarnings[v+1][w+1]
+            elif(v == 0 and w == 0):
+                riskMap[v][w] = boardWarnings[v][w+1] + boardWarnings[v+1][w] + boardWarnings[v+1][w+1]
+            elif(v == (rows - 1) and w == (columns - 1)):
+                riskMap[v][w] = boardWarnings[v-1][w-1] +boardWarnings[v-1][w] + boardWarnings[v][w-1]
+            elif(v == 0 and w > 0):
+                riskMap[v][w] = boardWarnings[v][w-1] + boardWarnings[v+1][w] + boardWarnings[v+1][w-1]
+                if(w != (columns - 1)):
+                    riskMap[v][w] += boardWarnings[v][w+1] + boardWarnings[v+1][w+1]
+            elif(v == (rows - 1) and w > 0):
+                riskMap[v][w] = boardWarnings[v-1][w] + boardWarnings[v-1][w+1] + boardWarnings[v][w+1] + boardWarnings[v-1][w-1] + boardWarnings[v][w-1]
+            elif(v == (rows - 1) and w == 0):
+                riskMap[v][w] = boardWarnings[v-1][w] + boardWarnings[v-1][w+1] + boardWarnings[v][w+1]
+            elif((v > 0 and v < (rows - 1)) and w == 0):
+                riskMap[v][w] = boardWarnings[v-1][w] + boardWarnings[v-1][w+1] + boardWarnings[v][w+1] + boardWarnings[v+1][w] + boardWarnings[v+1][w+1]
+            elif((v > 0 and v < (rows - 1)) and w == (columns - 1)):
+                riskMap[v][w] = boardWarnings[v-1][w-1] + boardWarnings[v-1][w] + boardWarnings[v][w-1] + boardWarnings[v+1][w-1] + boardWarnings[v+1][w]
 
         lowestNumber = np.amin(riskMap)
         possibleIndexes = np.where(riskMap == lowestNumber)
