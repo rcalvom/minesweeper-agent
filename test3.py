@@ -9,13 +9,13 @@ from agent.risk_minsweeper_agent import RiskMinsweeperAgent
 # Pandas
 import pandas as pd
 
-#sizes = [(10, 10), (12, 12), (14, 14), (16, 16), (18, 18)]
-#mines_proportions = [0.05, 0.10, 0.15, 0.20, 0.25]
-#games = 50
+sizes = [(16, 16), (18, 18)]
+mines_proportions = [0.05, 0.10, 0.15, 0.20, 0.25]
+games = 10
 
-sizes = [(10, 10)]
-mines_proportions = [0.05, 0.10]
-games = 1
+#sizes = [(10, 10)]
+#mines_proportions = [0.05, 0.10]
+#games = 1
 
 df = pd.DataFrame(columns=[
     "TEST",

@@ -64,7 +64,7 @@ class BoardState():
                     has_unflaged = True
         return count == number and has_unflaged
 
-    def get_number_of_cover_neighbours(self, x, y):
+    def get_number_of_uncover_neighbours(self, x, y):
         count = 0
         has_unflagged = False
         for i in range(x - 1, x + 2):
