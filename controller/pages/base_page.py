@@ -67,6 +67,11 @@ class BasePage:
         """Right click an specific element"""
         self.actions.context_click(self.find(locator)).perform()
 
+    def javascript_click_element(self, locator):
+        """Perform a javascript click in an specific element"""
+        self.driver.execute_script("arguments[0].click();", self.find(locator))
+        
+
     def write(self, locator, text):
         """Write in specific element"""
         element = self.find(locator)

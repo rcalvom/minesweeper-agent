@@ -54,15 +54,27 @@ class MinesweeperPage(BasePage):
         """Flag an specific game cell in (x, y) position"""
         super().right_click_element("//div[@id='cell_{0}_{1}']".format(x, y))
 
+    def click_number(self, x, y):
+        """Click an specific numbered cell in (x, y) position"""
+        super().click_element("//div[@id='cell_{0}_{1}']".format(x, y))
+
     def get_3BV(self) -> int:
         """Get 3BV metic of a game"""
         div_html = super().find("/html/body/div[3]/div[2]/div/div[1]/div[2]/div/div[20]/table/tbody/tr/td[2]/div/div/div/div/div[1]").get_attribute("innerHTML")
-        return int(re.findall(r"(?<=: )(\d+)", div_html))
+        return int(re.findall(r"(?<=: )(\d+)", div_html)[0])
 
     def get_clicks(self) -> int:
         """Get number of clicks performed"""
-        div1_html = super().find("/html/body/div[3]/div[2]/div/div[1]/div[2]/div/div[20]/table/tbody/tr/td[2]/div/div/div/div/div[1]/abbr[3]").get_attribute("innerHTML")
-        div2_html = super().find("/html/body/div[3]/div[2]/div/div[1]/div[2]/div/div[20]/table/tbody/tr/td[2]/div/div/div/div/div[1]/abbr[4]").get_attribute("innerHTML")
+        div1_html = "0"
+        div2_html = "1"
+        try:
+            div1_html = super().find("/html/body/div[3]/div[2]/div/div[1]/div[2]/div/div[20]/table/tbody/tr/td[2]/div/div/div/div/div[1]/abbr[3]").get_attribute("innerHTML")
+        except Exception:
+            pass
+        try:
+            div2_html = super().find("/html/body/div[3]/div[2]/div/div[1]/div[2]/div/div[20]/table/tbody/tr/td[2]/div/div/div/div/div[1]/abbr[4]").get_attribute("innerHTML")
+        except Exception:
+            pass
         return int(div1_html) + int(div2_html)
 
     def is_lost(self) -> bool:
@@ -93,9 +105,9 @@ class MinesweeperPage(BasePage):
         for index, cell in enumerate(cells):
             element_class = re.match(r".*class=\"(.+?)\".*", cell).group(1)
             if "hd_opened" in element_class:
-                data[index // x_last][index % x_last] = UncoveredCellState(number=re.match(r".*hd_type(\d+).*", element_class).group(1))
+                data[index % x_last][index // x_last] = UncoveredCellState(number=int(re.match(r".*hd_type(\d+).*", element_class).group(1)))
             elif "hd_closed" in element_class:
-                data[index // x_last][index % x_last] = CoveredCellState(flaged="hd_flag" in element_class)
+                data[index % x_last][index // x_last] = CoveredCellState(flaged="hd_flag" in element_class)
         return BoardState(board=data)
             
 
